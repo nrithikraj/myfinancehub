@@ -7234,7 +7234,7 @@ const API_CONFIG = {
     directAPIs: {
         enabled: true,               // ✅ Enabled by default
         refreshInterval: 300000,     // Refresh every 5 minutes
-        useCorsProxy: true,          // Use CORS proxy for local files
+        useCorsProxy: true,          // Use CORS proxy for browser (always enabled)
         corsProxy: 'https://api.allorigins.win/raw?url=',  // Public CORS proxy
         
         // Primary sources (tried in order)
@@ -17322,6 +17322,11 @@ function closeModal() {
 // ===== Fetch Live Price for Single Stock =====
 async function fetchLivePriceForStock(ticker) {
     try {
+        // Check if it's a cryptocurrency (BTC, ETH, etc.)
+        if (isCryptoTicker(ticker)) {
+            return await fetchCryptoPrice(ticker);
+        }
+        
         // Check if it's a commodity (gold/silver)
         if (ticker.toLowerCase().includes('gold') || ticker.toLowerCase().includes('silver')) {
             return await fetchCommodityPrice(ticker);
@@ -17335,6 +17340,76 @@ async function fetchLivePriceForStock(ticker) {
     }
 }
 
+// ===== Check if ticker is cryptocurrency =====
+function isCryptoTicker(ticker) {
+    const cryptoTickers = ['BTC', 'ETH', 'USDT', 'BNB', 'XRP', 'ADA', 'DOGE', 'SOL', 'DOT', 'MATIC', 
+                           'LTC', 'SHIB', 'TRX', 'AVAX', 'UNI', 'LINK', 'BCH', 'XLM', 'ALGO', 'VET'];
+    return cryptoTickers.includes(ticker.toUpperCase());
+}
+
+// ===== Fetch Cryptocurrency Prices =====
+async function fetchCryptoPrice(ticker) {
+    try {
+        // Map crypto tickers to CoinGecko IDs
+        const cryptoMap = {
+            'BTC': 'bitcoin',
+            'ETH': 'ethereum',
+            'USDT': 'tether',
+            'BNB': 'binancecoin',
+            'XRP': 'ripple',
+            'ADA': 'cardano',
+            'DOGE': 'dogecoin',
+            'SOL': 'solana',
+            'DOT': 'polkadot',
+            'MATIC': 'matic-network',
+            'LTC': 'litecoin',
+            'SHIB': 'shiba-inu',
+            'TRX': 'tron',
+            'AVAX': 'avalanche-2',
+            'UNI': 'uniswap',
+            'LINK': 'chainlink',
+            'BCH': 'bitcoin-cash',
+            'XLM': 'stellar',
+            'ALGO': 'algorand',
+            'VET': 'vechain'
+        };
+        
+        const coinId = cryptoMap[ticker.toUpperCase()] || ticker.toLowerCase();
+        
+        // Use CoinGecko API (free, no API key required)
+        let url = `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd,inr`;
+        
+        // Always use CORS proxy when running in browser
+        if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
+            url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
+        }
+        
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json'
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // Return price in USD (will be converted to INR if needed)
+        if (data[coinId]?.usd) {
+            console.log(`✓ ${ticker} price: $${data[coinId].usd}`);
+            return data[coinId].usd;
+        }
+        
+        return null;
+    } catch (error) {
+        console.error(`Error fetching crypto price for ${ticker}:`, error.message);
+        return null;
+    }
+}
+
 // ===== Fetch Commodity Prices (Gold/Silver) =====
 async function fetchCommodityPrice(commodity) {
     try {
@@ -17344,7 +17419,7 @@ async function fetchCommodityPrice(commodity) {
         try {
             let url = `https://metals-api.com/api/latest?access_key=demo&base=USD&symbols=${commodityType.toUpperCase()}`;
             
-            if (API_CONFIG.directAPIs.useCorsProxy && window.location.protocol === 'file:') {
+            if (API_CONFIG.directAPIs.useCorsProxy) {
                 url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
             }
             
@@ -17414,8 +17489,8 @@ async function fetchFromYahoo(ticker) {
         
         let url = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1d&range=1d`;
         
-        // Use CORS proxy if running from local file
-        if (API_CONFIG.directAPIs.useCorsProxy && window.location.protocol === 'file:') {
+        // Always use CORS proxy when running in browser (file:// or https://)
+        if (API_CONFIG.directAPIs.useCorsProxy) {
             url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
         }
         
@@ -17449,8 +17524,8 @@ async function fetchFromFinnhub(ticker) {
         const cleanTicker = ticker.replace(/\.(NS|BO)$/, '');
         let url = `https://finnhub.io/api/v1/quote?symbol=${cleanTicker}&token=demo`;
         
-        // Use CORS proxy if running from local file
-        if (API_CONFIG.directAPIs.useCorsProxy && window.location.protocol === 'file:') {
+        // Always use CORS proxy when running in browser (file:// or https://)
+        if (API_CONFIG.directAPIs.useCorsProxy) {
             url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
         }
         
