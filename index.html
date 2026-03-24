@@ -7422,6 +7422,16 @@ class LivePriceService {
     
     // ===== Fetch price from multiple API sources =====
     async fetchPriceFromAPIs(ticker) {
+        // Check if it's a cryptocurrency first
+        if (this.isCryptoTicker(ticker)) {
+            try {
+                const price = await this.fetchCryptoPrice(ticker);
+                if (price) return price;
+            } catch (error) {
+                console.warn(`Crypto API failed for ${ticker}`);
+            }
+        }
+        
         // Try Yahoo Finance first (works for most stocks)
         try {
             const price = await this.fetchFromYahoo(ticker);
@@ -7449,6 +7459,77 @@ class LivePriceService {
         return null;
     }
     
+    // ===== Check if ticker is cryptocurrency =====
+    isCryptoTicker(ticker) {
+        const cryptoTickers = ['BTC', 'ETH', 'USDT', 'BNB', 'XRP', 'ADA', 'DOGE', 'SOL', 'DOT', 'MATIC', 
+                               'LTC', 'SHIB', 'TRX', 'AVAX', 'UNI', 'LINK', 'BCH', 'XLM', 'ALGO', 'VET'];
+        return cryptoTickers.includes(ticker.toUpperCase());
+    }
+
+    // ===== Fetch Cryptocurrency Prices =====
+    async fetchCryptoPrice(ticker) {
+        try {
+            // Map crypto tickers to Yahoo Finance format (e.g., BTC → BTC-USD)
+            const cryptoMap = {
+                'BTC': 'BTC-USD',
+                'ETH': 'ETH-USD',
+                'USDT': 'USDT-USD',
+                'BNB': 'BNB-USD',
+                'XRP': 'XRP-USD',
+                'ADA': 'ADA-USD',
+                'DOGE': 'DOGE-USD',
+                'SOL': 'SOL-USD',
+                'DOT': 'DOT-USD',
+                'MATIC': 'MATIC-USD',
+                'LTC': 'LTC-USD',
+                'SHIB': 'SHIB-USD',
+                'TRX': 'TRX-USD',
+                'AVAX': 'AVAX-USD',
+                'UNI': 'UNI-USD',
+                'LINK': 'LINK-USD',
+                'BCH': 'BCH-USD',
+                'XLM': 'XLM-USD',
+                'ALGO': 'ALGO-USD',
+                'VET': 'VET-USD'
+            };
+            
+            const yahooTicker = cryptoMap[ticker.toUpperCase()] || `${ticker.toUpperCase()}-USD`;
+            
+            // Use Yahoo Finance API (same as stocks)
+            let url = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1d&range=1d`;
+            
+            // Always use CORS proxy when running in browser
+            if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
+                url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
+            }
+            
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            // Return price in USD (will be converted to INR if needed)
+            if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
+                const price = data.chart.result[0].meta.regularMarketPrice;
+                console.log(`✓ ${ticker} price: $${price}`);
+                return price;
+            }
+            
+            return null;
+        } catch (error) {
+            console.error(`Error fetching crypto price for ${ticker}:`, error.message);
+            return null;
+        }
+    }
+    
     // ===== Yahoo Finance API =====
     async fetchFromYahoo(ticker) {
         // Yahoo Finance expects tickers in specific formats
@@ -7456,7 +7537,12 @@ class LivePriceService {
                            ticker.endsWith('NS') || ticker.endsWith('BO') ? ticker :
                            `${ticker}.NS`; // Default to NSE for Indian stocks
         
-        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1d&range=1d`;
+        let url = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1d&range=1d`;
+        
+        // Always use CORS proxy when running in browser
+        if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
+            url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
+        }
         
         const response = await fetch(url);
         const data = await response.json();
@@ -7473,7 +7559,12 @@ class LivePriceService {
         const apiKey = API_CONFIG.directAPIs.sources.find(s => s.name === 'Alpha Vantage')?.apiKey || 'demo';
         const cleanTicker = ticker.replace(/\.(NS|BO)$/, '');
         
-        const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${cleanTicker}&apikey=${apiKey}`;
+        let url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${cleanTicker}&apikey=${apiKey}`;
+        
+        // Always use CORS proxy when running in browser
+        if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
+            url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
+        }
         
         const response = await fetch(url);
         const data = await response.json();
@@ -7490,7 +7581,12 @@ class LivePriceService {
         const apiKey = API_CONFIG.directAPIs.sources.find(s => s.name === 'Finnhub')?.apiKey || 'demo';
         const cleanTicker = ticker.replace(/\.(NS|BO)$/, '');
         
-        const url = `https://finnhub.io/api/v1/quote?symbol=${cleanTicker}&token=${apiKey}`;
+        let url = `https://finnhub.io/api/v1/quote?symbol=${cleanTicker}&token=${apiKey}`;
+        
+        // Always use CORS proxy when running in browser
+        if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
+            url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
+        }
         
         const response = await fetch(url);
         const data = await response.json();
@@ -7542,6 +7638,14 @@ class LivePriceService {
             }
         });
 
+        // Also add crypto tickers
+        const cryptoData = window.cryptoData || [];
+        cryptoData.forEach(item => {
+            if (item.ticker) {
+                symbols.add(item.ticker);
+            }
+        });
+
         return Array.from(symbols);
     }
 
@@ -7582,7 +7686,13 @@ class LivePriceService {
     // ===== Fetch from Finnhub =====
     async fetchFromFinnhub(symbol) {
         try {
-            const url = `${API_CONFIG.finnhub.baseUrl}/quote?symbol=${symbol}&token=${API_CONFIG.finnhub.key}`;
+            let url = `${API_CONFIG.finnhub.baseUrl}/quote?symbol=${symbol}&token=${API_CONFIG.finnhub.key}`;
+            
+            // Always use CORS proxy when running in browser
+            if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
+                url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
+            }
+            
             const response = await fetch(url);
             const data = await response.json();
             
@@ -7599,7 +7709,13 @@ class LivePriceService {
     // ===== Fetch from Alpha Vantage =====
     async fetchFromAlphaVantage(symbol) {
         try {
-            const url = `${API_CONFIG.alphaVantage.baseUrl}?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_CONFIG.alphaVantage.key}`;
+            let url = `${API_CONFIG.alphaVantage.baseUrl}?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_CONFIG.alphaVantage.key}`;
+            
+            // Always use CORS proxy when running in browser
+            if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
+                url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
+            }
+            
             const response = await fetch(url);
             const data = await response.json();
             
@@ -7616,7 +7732,13 @@ class LivePriceService {
     // ===== Fetch from Twelve Data =====
     async fetchFromTwelveData(symbol) {
         try {
-            const url = `${API_CONFIG.twelveData.baseUrl}/price?symbol=${symbol}&apikey=${API_CONFIG.twelveData.key}`;
+            let url = `${API_CONFIG.twelveData.baseUrl}/price?symbol=${symbol}&apikey=${API_CONFIG.twelveData.key}`;
+            
+            // Always use CORS proxy when running in browser
+            if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
+                url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
+            }
+            
             const response = await fetch(url);
             const data = await response.json();
             
@@ -7699,6 +7821,23 @@ class LivePriceService {
             window.setUserData('portfolioData', JSON.stringify(portfolioData));
         }
 
+        // Also update crypto data
+        const cryptoData = window.cryptoData || [];
+        cryptoData.forEach(item => {
+            const cachedPrice = this.priceCache.get(item.ticker);
+            
+            if (cachedPrice) {
+                item.currentPrice = cachedPrice;
+                updatedCount++;
+            }
+        });
+        
+        // Update window reference and save crypto data
+        window.cryptoData = cryptoData;
+        if (typeof window.setUserData === 'function') {
+            window.setUserData('cryptoData', JSON.stringify(cryptoData));
+        }
+
         console.log(`✅ Updated ${updatedCount} portfolio items`);
 
         // Re-render portfolio table
@@ -7707,6 +7846,9 @@ class LivePriceService {
         }
         if (typeof renderCommodityTable === 'function') {
             renderCommodityTable();
+        }
+        if (typeof renderCryptoTable === 'function') {
+            renderCryptoTable();
         }
         // Call updateSummary if it exists
         if (typeof updateSummary === 'function') {
@@ -17350,34 +17492,34 @@ function isCryptoTicker(ticker) {
 // ===== Fetch Cryptocurrency Prices =====
 async function fetchCryptoPrice(ticker) {
     try {
-        // Map crypto tickers to CoinGecko IDs
+        // Map crypto tickers to Yahoo Finance format (e.g., BTC → BTC-USD)
         const cryptoMap = {
-            'BTC': 'bitcoin',
-            'ETH': 'ethereum',
-            'USDT': 'tether',
-            'BNB': 'binancecoin',
-            'XRP': 'ripple',
-            'ADA': 'cardano',
-            'DOGE': 'dogecoin',
-            'SOL': 'solana',
-            'DOT': 'polkadot',
-            'MATIC': 'matic-network',
-            'LTC': 'litecoin',
-            'SHIB': 'shiba-inu',
-            'TRX': 'tron',
-            'AVAX': 'avalanche-2',
-            'UNI': 'uniswap',
-            'LINK': 'chainlink',
-            'BCH': 'bitcoin-cash',
-            'XLM': 'stellar',
-            'ALGO': 'algorand',
-            'VET': 'vechain'
+            'BTC': 'BTC-USD',
+            'ETH': 'ETH-USD',
+            'USDT': 'USDT-USD',
+            'BNB': 'BNB-USD',
+            'XRP': 'XRP-USD',
+            'ADA': 'ADA-USD',
+            'DOGE': 'DOGE-USD',
+            'SOL': 'SOL-USD',
+            'DOT': 'DOT-USD',
+            'MATIC': 'MATIC-USD',
+            'LTC': 'LTC-USD',
+            'SHIB': 'SHIB-USD',
+            'TRX': 'TRX-USD',
+            'AVAX': 'AVAX-USD',
+            'UNI': 'UNI-USD',
+            'LINK': 'LINK-USD',
+            'BCH': 'BCH-USD',
+            'XLM': 'XLM-USD',
+            'ALGO': 'ALGO-USD',
+            'VET': 'VET-USD'
         };
         
-        const coinId = cryptoMap[ticker.toUpperCase()] || ticker.toLowerCase();
+        const yahooTicker = cryptoMap[ticker.toUpperCase()] || `${ticker.toUpperCase()}-USD`;
         
-        // Use CoinGecko API (free, no API key required)
-        let url = `https://api.coingecko.com/api/v3/simple/price?ids=${coinId}&vs_currencies=usd,inr`;
+        // Use Yahoo Finance API (same as stocks)
+        let url = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1d&range=1d`;
         
         // Always use CORS proxy when running in browser
         if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
@@ -17398,9 +17540,10 @@ async function fetchCryptoPrice(ticker) {
         const data = await response.json();
         
         // Return price in USD (will be converted to INR if needed)
-        if (data[coinId]?.usd) {
-            console.log(`✓ ${ticker} price: $${data[coinId].usd}`);
-            return data[coinId].usd;
+        if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
+            const price = data.chart.result[0].meta.regularMarketPrice;
+            console.log(`✓ ${ticker} price: $${price}`);
+            return price;
         }
         
         return null;
