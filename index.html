@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -21,6 +21,9 @@ body {
     font-size: 15px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* Mobile optimizations */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 /* ===== Login Page Styles ===== */
@@ -51,6 +54,17 @@ body {
 }
 
 @keyframes loginSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes modalSlideIn {
     from {
         opacity: 0;
         transform: translateY(-30px);
@@ -1055,14 +1069,555 @@ main {
 }
 
 /* ===== Responsive Design ===== */
+
+/* Tablet & Small Desktop (max-width: 1024px) */
 @media (max-width: 1024px) {
     .realestate-grid {
         grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .section-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
 }
 
+/* Tablet (max-width: 768px) */
+@media (max-width: 768px) {
+    body {
+        font-size: 14px;
+    }
+    
+    /* Navigation */
+    .nav-links {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .nav-link {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+    
+    /* Dashboard */
+    .dashboard-summary {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .section-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+    
+    .section-card {
+        padding: 16px;
+    }
+    
+    /* Tables */
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+        min-width: 800px;
+        font-size: 13px;
+    }
+    
+    th, td {
+        padding: 10px 8px;
+    }
+    
+    /* Filter Tabs */
+    .filter-tabs {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        flex-wrap: nowrap;
+        gap: 8px;
+        padding-bottom: 5px;
+    }
+    
+    .filter-tabs .tab {
+        flex-shrink: 0;
+        min-width: 120px;
+        padding: 10px 16px;
+        font-size: 13px;
+    }
+    
+    /* Modal */
+    .modal-content {
+        max-width: calc(100% - 30px);
+        margin: 15px;
+    }
+    
+    .modal-header {
+        padding: 18px 20px;
+    }
+    
+    .modal-header h2 {
+        font-size: 18px;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .modal-footer {
+        padding: 16px 20px;
+    }
+    
+    /* Buttons */
+    .btn-primary, .btn-secondary, .btn-warning {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+    
+    /* Forms */
+    .form-group label {
+        font-size: 14px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+    
+    /* Summary Cards */
+    .summary-card {
+        padding: 18px;
+    }
+    
+    .summary-card h3 {
+        font-size: 14px;
+    }
+    
+    .summary-card .amount {
+        font-size: 22px;
+    }
+    
+    /* Portfolio Breakdown */
+    .portfolio-breakdown {
+        padding: 16px;
+    }
+}
+
+/* Mobile (max-width: 480px) */
+@media (max-width: 480px) {
+    body {
+        font-size: 13px;
+    }
+    
+    /* Header */
+    .app-header {
+        padding: 12px 15px;
+    }
+    
+    .app-header h1 {
+        font-size: 18px;
+    }
+    
+    .header-actions {
+        gap: 8px;
+    }
+    
+    .header-btn {
+        padding: 8px 12px;
+        font-size: 13px;
+        min-width: auto;
+    }
+    
+    .header-btn i {
+        font-size: 16px;
+    }
+    
+    .header-btn span {
+        display: none;
+    }
+    
+    /* Navigation */
+    .nav-links {
+        padding: 8px;
+    }
+    
+    .nav-link {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    
+    .nav-link i {
+        font-size: 16px;
+    }
+    
+    /* Main Content */
+    .main-content {
+        padding: 15px;
+    }
+    
+    .page-header {
+        margin-bottom: 16px;
+    }
+    
+    .page-header h2 {
+        font-size: 20px;
+    }
+    
+    /* Dashboard Summary */
+    .dashboard-summary {
+        gap: 12px;
+    }
+    
+    .stat-card {
+        padding: 16px 14px;
+    }
+    
+    .stat-card .icon {
+        width: 40px;
+        height: 40px;
+        font-size: 18px;
+    }
+    
+    .stat-card .label {
+        font-size: 12px;
+    }
+    
+    .stat-card .value {
+        font-size: 18px;
+    }
+    
+    /* Section Cards */
+    .section-card {
+        padding: 14px;
+    }
+    
+    .section-card-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+    
+    .section-card-content h3 {
+        font-size: 14px;
+    }
+    
+    .section-card-content p {
+        font-size: 12px;
+    }
+    
+    /* Quick Access Section */
+    .quick-access-section h2 {
+        font-size: 18px;
+    }
+    
+    /* Tables */
+    table {
+        min-width: 600px;
+        font-size: 12px;
+    }
+    
+    th, td {
+        padding: 8px 6px;
+    }
+    
+    th {
+        font-size: 12px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .action-buttons .btn-icon {
+        width: 100%;
+        padding: 6px;
+        font-size: 12px;
+    }
+    
+    /* Filter Tabs - Optimized for Mobile */
+    .filter-tabs {
+        gap: 6px;
+        margin-bottom: 16px;
+    }
+    
+    .filter-tabs .tab {
+        min-width: 80px;
+        padding: 6px 10px;
+        font-size: 11px;
+        white-space: nowrap;
+        border-width: 1px;
+    }
+    
+    /* Modal - Full Screen on Mobile */
+    .modal-overlay {
+        padding: 10px;
+    }
+    
+    .modal-content {
+        max-width: 100%;
+        margin: 10px;
+        border-radius: 12px;
+    }
+    
+    .modal-header {
+        padding: 16px;
+    }
+    
+    .modal-header h2 {
+        font-size: 16px;
+    }
+    
+    .close-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 20px;
+    }
+    
+    .modal-body {
+        padding: 16px;
+    }
+    
+    .modal-footer {
+        padding: 14px 16px;
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .modal-footer button {
+        width: 100%;
+    }
+    
+    /* Forms */
+    .form-group {
+        margin-bottom: 14px;
+    }
+    
+    .form-group label {
+        font-size: 13px;
+        margin-bottom: 6px;
+    }
+    
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 14px;
+        padding: 10px;
+    }
+    
+    /* Buttons - Minimum Touch Target 44px */
+    .btn-primary, .btn-secondary, .btn-warning {
+        padding: 12px 16px;
+        font-size: 13px;
+        min-height: 44px;
+    }
+    
+    .btn-icon {
+        min-width: 44px;
+        min-height: 44px;
+        padding: 10px;
+    }
+    
+    /* Summary Cards */
+    .summary-card {
+        padding: 14px;
+    }
+    
+    .summary-card h3 {
+        font-size: 13px;
+    }
+    
+    .summary-card .amount {
+        font-size: 20px;
+    }
+    
+    /* Portfolio Info Cards */
+    .portfolio-info-card {
+        padding: 14px;
+    }
+    
+    .portfolio-info-card h3 {
+        font-size: 14px;
+    }
+    
+    /* Charts */
+    canvas {
+        max-height: 250px !important;
+    }
+    
     .chart-placeholder i {
+        font-size: 36px;
+    }
+    
+    /* Login/Signup Pages */
+    .login-container {
+        padding: 32px 24px;
+        margin: 15px;
+    }
+    
+    .login-header h1 {
+        font-size: 24px;
+    }
+    
+    .login-header i {
         font-size: 48px;
+    }
+    
+    /* Menu Dropdown */
+    .menu-dropdown-content {
+        width: calc(100vw - 30px);
+        right: 15px;
+    }
+    
+    .menu-item {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+    
+    /* Portfolio Breakdown in Modal */
+    .portfolio-breakdown {
+        padding: 12px;
+        margin: 12px 0;
+    }
+    
+    .portfolio-breakdown h3 {
+        font-size: 14px;
+        margin-bottom: 10px;
+    }
+    
+    /* Hide less important columns on mobile */
+    .mobile-hide {
+        display: none;
+    }
+    
+    /* Scroll hint for tables */
+    .table-container::after {
+        content: '← Scroll for more →';
+        display: block;
+        text-align: center;
+        padding: 8px;
+        font-size: 11px;
+        color: #94a3b8;
+        font-style: italic;
+    }
+}
+
+/* ===== Mobile Touch & Accessibility Enhancements ===== */
+@media (max-width: 768px) {
+    /* Ensure all clickable elements are touch-friendly (min 44x44px) */
+    button, 
+    .btn, 
+    .nav-link, 
+    .tab, 
+    .menu-item,
+    input[type="submit"],
+    input[type="button"] {
+        min-height: 44px;
+        padding: 12px 16px;
+    }
+    
+    /* Improve tap targets for icons */
+    .action-buttons button,
+    .btn-icon {
+        min-width: 44px;
+        min-height: 44px;
+    }
+    
+    /* Smooth scrolling for better mobile experience */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Prevent text selection on double tap */
+    .section-card,
+    .stat-card,
+    .tab,
+    button {
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    /* Allow text selection in inputs and text areas */
+    input,
+    textarea,
+    .modal-body,
+    table {
+        -webkit-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        user-select: text;
+    }
+    
+    /* Improve scrollbar visibility on mobile */
+    .table-container::-webkit-scrollbar {
+        height: 6px;
+    }
+    
+    .table-container::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 3px;
+    }
+    
+    .table-container::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+    
+    /* Optimize spacing for mobile cards */
+    .section-cards-grid > *,
+    .stats-grid > * {
+        margin-bottom: 0;
+    }
+    
+    /* Improve form input spacing on mobile */
+    input:focus,
+    select:focus,
+    textarea:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+}
+
+/* ===== Mobile Landscape Orientation ===== */
+@media (max-width: 896px) and (orientation: landscape) {
+    .modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .login-container {
+        max-height: 85vh;
+        overflow-y: auto;
+    }
+    
+    .chat-window {
+        height: 85vh;
+    }
+    
+    /* Reduce vertical padding in landscape */
+    .main-content {
+        padding: 10px 15px;
+    }
+    
+    .stat-card {
+        padding: 12px 14px;
+    }
+    
+    .section-card {
+        padding: 12px;
     }
 }
 
@@ -3049,6 +3604,54 @@ body.dark-mode div[style*="background: #e3f2fd"] {
     border-color: rgba(59, 130, 246, 0.3) !important;
 }
 
+/* ===== Dark Mode Mobile Optimizations ===== */
+@media (max-width: 768px) {
+    body.dark-mode {
+        background: #0f172a;
+    }
+    
+    body.dark-mode .modal-content {
+        background: #1e293b;
+        border: 1px solid #334155;
+    }
+    
+    body.dark-mode .modal-header {
+        background: #1e293b;
+        border-bottom-color: #334155;
+    }
+    
+    body.dark-mode .modal-body {
+        background: #1e293b;
+    }
+    
+    body.dark-mode .table-container {
+        background: #1e293b;
+    }
+    
+    body.dark-mode table {
+        background: #1e293b;
+    }
+    
+    body.dark-mode .login-container {
+        background: #1e293b;
+        border: 1px solid #334155;
+    }
+    
+    body.dark-mode input,
+    body.dark-mode select,
+    body.dark-mode textarea {
+        background: #0f172a;
+        border-color: #475569;
+        color: #e2e8f0;
+    }
+    
+    body.dark-mode .stat-card,
+    body.dark-mode .section-card {
+        background: #1e293b;
+        border: 1px solid #334155;
+    }
+}
+
 /* ===== CHATBOT STYLES ===== */
 .chatbot-container {
     position: fixed;
@@ -3528,15 +4131,76 @@ body.dark-mode .quick-action-btn {
 
 /* Responsive */
 @media (max-width: 768px) {
+    .chatbot-container {
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    .chat-toggle {
+        width: 56px;
+        height: 56px;
+        font-size: 24px;
+    }
+    
     .chat-window {
-        width: calc(100vw - 40px);
-        height: calc(100vh - 100px);
-        bottom: 70px;
-        right: 20px;
+        width: calc(100vw - 30px);
+        height: calc(100vh - 120px);
+        bottom: 80px;
+        right: 15px;
+        border-radius: 12px;
+    }
+    
+    .chat-header {
+        padding: 14px 16px;
+    }
+    
+    .chat-header h3 {
+        font-size: 16px;
+    }
+    
+    .chat-messages {
+        padding: 12px;
     }
     
     .chat-bubble {
         max-width: 85%;
+        font-size: 13px;
+        padding: 10px 12px;
+    }
+    
+    .chat-input-area {
+        padding: 12px;
+    }
+    
+    .chat-input-area input {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+    
+    .chat-input-area button {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chat-toggle {
+        width: 52px;
+        height: 52px;
+        font-size: 22px;
+    }
+    
+    .chat-window {
+        width: 100vw;
+        height: 100vh;
+        bottom: 0;
+        right: 0;
+        border-radius: 0;
+        position: fixed;
+    }
+    
+    .chat-header {
+        padding: 12px 14px;
     }
 }
 
@@ -4268,48 +4932,48 @@ body.dark-mode .modal-body h4 {
                     <div style="margin-top: 10px; font-size: 18px; font-weight: bold;" id="usStockValue">₹ 0</div>
                 </div>
                 
-                <div style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); padding: 18px; border-radius: 12px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); padding: 18px; border-radius: 12px; color: #1e293b; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                        <i class="fas fa-landmark" style="font-size: 22px;"></i>
-                        <h3 style="margin: 0; font-size: 15px;">Indian Mutual Funds</h3>
+                        <i class="fas fa-landmark" style="font-size: 22px; color: #334155;"></i>
+                        <h3 style="margin: 0; font-size: 15px; color: #1e293b; font-weight: 700;">Indian Mutual Funds</h3>
                     </div>
-                    <p style="margin: 0; font-size: 13px; opacity: 0.9; line-height: 1.4;">
+                    <p style="margin: 0; font-size: 13px; color: #334155; line-height: 1.4; font-weight: 500;">
                         Indian MFs (equity & debt). Diversified portfolio.
                     </p>
-                    <div style="margin-top: 10px; font-size: 18px; font-weight: bold;" id="indianMFValue">₹ 0</div>
+                    <div style="margin-top: 10px; font-size: 18px; font-weight: bold; color: #0f172a;" id="indianMFValue">₹ 0</div>
                 </div>
                 
-                <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 18px; border-radius: 12px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); padding: 18px; border-radius: 12px; color: #1e293b; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                        <i class="fas fa-flag-usa" style="font-size: 22px;"></i>
-                        <h3 style="margin: 0; font-size: 15px;">US Mutual Funds</h3>
+                        <i class="fas fa-flag-usa" style="font-size: 22px; color: #334155;"></i>
+                        <h3 style="margin: 0; font-size: 15px; color: #1e293b; font-weight: 700;">US Mutual Funds</h3>
                     </div>
-                    <p style="margin: 0; font-size: 13px; opacity: 0.9; line-height: 1.4;">
+                    <p style="margin: 0; font-size: 13px; color: #334155; line-height: 1.4; font-weight: 500;">
                         US MFs with international exposure & dollar gains.
                     </p>
-                    <div style="margin-top: 10px; font-size: 18px; font-weight: bold;" id="usMFValue">₹ 0</div>
+                    <div style="margin-top: 10px; font-size: 18px; font-weight: bold; color: #0f172a;" id="usMFValue">₹ 0</div>
                 </div>
                 
-                <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 18px; border-radius: 12px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); padding: 18px; border-radius: 12px; color: #1e293b; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                        <i class="fas fa-shield-alt" style="font-size: 22px;"></i>
-                        <h3 style="margin: 0; font-size: 15px;">Equity Mutual Funds</h3>
+                        <i class="fas fa-shield-alt" style="font-size: 22px; color: #334155;"></i>
+                        <h3 style="margin: 0; font-size: 15px; color: #1e293b; font-weight: 700;">Equity Mutual Funds</h3>
                     </div>
-                    <p style="margin: 0; font-size: 13px; opacity: 0.9; line-height: 1.4;">
+                    <p style="margin: 0; font-size: 13px; color: #334155; line-height: 1.4; font-weight: 500;">
                         Equity portfolios. Higher risk, higher returns.
                     </p>
-                    <div style="margin-top: 10px; font-size: 18px; font-weight: bold;" id="equityMFValue">₹ 0</div>
+                    <div style="margin-top: 10px; font-size: 18px; font-weight: bold; color: #0f172a;" id="equityMFValue">₹ 0</div>
                 </div>
                 
-                <div style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); padding: 18px; border-radius: 12px; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); padding: 18px; border-radius: 12px; color: #1e293b; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                     <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
-                        <i class="fas fa-university" style="font-size: 22px;"></i>
-                        <h3 style="margin: 0; font-size: 15px;">Debt Mutual Funds</h3>
+                        <i class="fas fa-university" style="font-size: 22px; color: #334155;"></i>
+                        <h3 style="margin: 0; font-size: 15px; color: #1e293b; font-weight: 700;">Debt Mutual Funds</h3>
                     </div>
-                    <p style="margin: 0; font-size: 13px; opacity: 0.9; line-height: 1.4;">
+                    <p style="margin: 0; font-size: 13px; color: #334155; line-height: 1.4; font-weight: 500;">
                         Fixed income funds. Lower risk, stable returns.
                     </p>
-                    <div style="margin-top: 10px; font-size: 18px; font-weight: bold;" id="debtMFValue">₹ 0</div>
+                    <div style="margin-top: 10px; font-size: 18px; font-weight: bold; color: #0f172a;" id="debtMFValue">₹ 0</div>
                 </div>
             </div>
 
@@ -5523,6 +6187,9 @@ body.dark-mode .modal-body h4 {
             <a href="#" class="menu-item" onclick="openSettingsModal(); closeMainMenu(); return false;">
                 <i class="fas fa-cog"></i> Settings
             </a>
+            <a href="#" class="menu-item" onclick="openContactModal(); closeMainMenu(); return false;">
+                <i class="fas fa-envelope"></i> Contact
+            </a>
             <a href="#" class="menu-item" id="menuLoginButton" onclick="showLogin(); closeMainMenu(); return false;" style="display: none; color: #3b82f6;">
                 <i class="fas fa-sign-in-alt"></i> Login
             </a>
@@ -5682,17 +6349,98 @@ body.dark-mode .modal-body h4 {
                 <p style="color: #666; margin-bottom: 10px; line-height: 1.6;"><strong>Budget Management:</strong> Set monthly budgets for expense categories. Track spending and receive alerts when exceeding limits. View spending vs budget comparison charts.</p>
                 <p style="color: #666; margin-bottom: 25px; line-height: 1.6;"><strong>Financial Goals:</strong> Set savings goals with target amount and deadline. Track progress towards goals like house down payment, emergency fund, vacation, education, etc. View completion percentage and receive milestone notifications.</p>
                 
+                <h3 style="color: #667eea; margin-bottom: 15px; border-bottom: 2px solid #667eea; padding-bottom: 8px;"><i class="fas fa-robot"></i> AI Chatbot Assistant</h3>
+                <p style="color: #666; margin-bottom: 25px; line-height: 1.6;">Get instant help and answers to your financial questions with the AI-powered chatbot. Click the chat icon in the bottom-right corner to start a conversation. Ask about features, get guidance on using the app, or receive personalized financial tips. The chatbot remembers your conversation history within the session.</p>
+                
+                <h3 style="color: #667eea; margin-bottom: 15px; border-bottom: 2px solid #667eea; padding-bottom: 8px;"><i class="fas fa-envelope"></i> Contact & Feedback</h3>
+                <p style="color: #666; margin-bottom: 25px; line-height: 1.6;">Need help or have suggestions? Access the Contact section from the main menu to send us an email or provide feedback through our feedback form. We value your input and continuously work to improve the app based on user suggestions.</p>
+                
                 <p style="margin-top: 30px; padding: 20px; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border-left: 4px solid #667eea; border-radius: 8px; line-height: 1.6;">
                     <i class="fas fa-lightbulb" style="color: #667eea; font-size: 24px;"></i> <strong style="color: #667eea;">Tips:</strong><br>
                     <span style="color: #666;">• All data is stored locally in your browser for complete privacy and security<br>
                     • Use <strong>Settings > Export Data</strong> regularly to create backup files<br>
                     • Navigate quickly using the sidebar menu or Quick Access cards<br>
                     • Use filters in expense tracker to analyze spending patterns<br>
-                    • Check Summary section for comprehensive financial analysis and reports</span>
+                    • Check Summary section for comprehensive financial analysis and reports<br>
+                    • Use the AI chatbot for instant help and guidance</span>
                 </p>
             </div>
             <div class="modal-footer">
                 <button class="btn-primary" onclick="closeHelpModal()">Got It</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contact Modal -->
+    <div id="contactModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999;">
+        <div class="modal-content" style="max-width: 600px; max-height: 85vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2><i class="fas fa-envelope"></i> Contact</h2>
+                <button class="close-btn" onclick="closeContactModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; padding: 30px 20px;">
+                    <div style="margin-bottom: 40px;">
+                        <i class="fas fa-envelope" style="font-size: 48px; color: #667eea; margin-bottom: 20px;"></i>
+                        <h3 style="color: #333; margin-bottom: 10px; font-size: 20px;">Get in Touch</h3>
+                        <p style="color: #666; margin-bottom: 20px; line-height: 1.6;">Have questions or need support? Reach out to us!</p>
+                        <div style="background: #f8f9fb; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                            <i class="fas fa-at" style="color: #667eea; font-size: 24px; margin-bottom: 10px;"></i>
+                            <p style="color: #666; font-size: 14px; margin-bottom: 5px;">Email</p>
+                            <a href="mailto:nrithikraj@gmail.com" style="color: #667eea; font-size: 18px; font-weight: 600; text-decoration: none;">
+                                nrithikraj@gmail.com
+                            </a>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="color: #333; margin-bottom: 15px; font-size: 18px;">Share Your Feedback</h3>
+                        <p style="color: #666; margin-bottom: 20px; line-height: 1.6;">We'd love to hear your thoughts and suggestions!</p>
+                        <a href="https://eur03.safelinks.protection.outlook.com/?url=https%3A%2F%2Fforms.gle%2FoufybtTbxsme1aYF8&data=05%7C02%7Crithikn.raj%40bosch.com%7C776f71056dba4b6b5cd108de9f8ab9ec%7C0ae51e1907c84e4bbb6d648ee58410f4%7C0%7C0%7C639123615328659759%7CUnknown%7CTWFpbGZsb3d8eyJFbXB0eU1hcGkiOnRydWUsIlYiOiIwLjAuMDAwMCIsIlAiOiJXaW4zMiIsIkFOIjoiTWFpbCIsIldUIjoyfQ%3D%3D%7C0%7C%7C%7C&sdata=LesYniUUmsEQ1N%2Fw1Cr8qDTzLa9tv8FUD9emnEQHQKI%3D&reserved=0" target="_blank" class="btn-primary" style="display: inline-block; padding: 15px 40px; font-size: 16px; text-decoration: none; border-radius: 8px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; font-weight: 600; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                            <i class="fas fa-comment-dots"></i> Give Feedback
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeContactModal()">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- First Time User Warning Modal -->
+    <div id="firstTimeWarningModal" class="modal-overlay" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10001; background: rgba(0, 0, 0, 0.7);">
+        <div class="modal-content" style="max-width: 550px; animation: modalSlideIn 0.4s ease-out;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); color: white; border-radius: 8px 8px 0 0;">
+                <h2 style="color: white;"><i class="fas fa-exclamation-triangle"></i> Important Data Storage Notice</h2>
+            </div>
+            <div class="modal-body" style="padding: 30px 25px;">
+                <div style="background: #fff3cd; border-left: 4px solid #f59e0b; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
+                    <h3 style="color: #856404; margin-bottom: 15px; font-size: 18px;">
+                        <i class="fas fa-info-circle"></i> Your Data is Stored Locally
+                    </h3>
+                    <p style="color: #856404; line-height: 1.8; margin-bottom: 15px;">
+                        All your financial data is stored <strong>locally in your browser's storage</strong>. This provides complete privacy and security as your data never leaves your device.
+                    </p>
+                    <p style="color: #856404; line-height: 1.8; margin-bottom: 15px;">
+                        <strong style="color: #dc2626;">⚠️ Warning:</strong> If you clear your browser data, cache, or cookies, <strong>all your financial information will be permanently deleted!</strong>
+                    </p>
+                </div>
+                <div style="background: #dbeafe; border-left: 4px solid #2563eb; padding: 20px; border-radius: 8px;">
+                    <h4 style="color: #1e3a8a; margin-bottom: 12px; font-size: 16px; font-weight: 700;">
+                        <i class="fas fa-shield-alt"></i> How to Protect Your Data:
+                    </h4>
+                    <ul style="color: #1e40af; line-height: 1.8; padding-left: 20px; font-weight: 500;">
+                        <li>Regularly <strong style="color: #1e3a8a;">export your data</strong> using Settings → Data Management → Export Data</li>
+                        <li>Save the backup file in a safe location (Cloud storage, USB drive, etc.)</li>
+                        <li>Never clear browser data without backing up first</li>
+                        <li>Use the same browser and device for consistency</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 20px 25px;">
+                <button class="btn-primary" onclick="closeFirstTimeWarning()" style="width: 100%; padding: 15px; font-size: 16px; font-weight: 600;">
+                    <i class="fas fa-check-circle"></i> I Understand, Continue
+                </button>
             </div>
         </div>
     </div>
@@ -6140,7 +6888,10 @@ body.dark-mode .modal-body h4 {
                         <label for="cryptoTicker">Ticker Symbol:</label>
                         <input type="text" id="cryptoTicker" name="cryptoTicker" required placeholder="e.g., BTC-USD">
                         <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
-                            Examples: BTC-USD, ETH-USD, XRP-USD (Live price will be fetched automatically)
+                            Examples: BTC-USD, ETH-USD, XRP-USD (Live price will be fetched automatically)<br>
+                            <a href="https://finance.yahoo.com/" target="_blank" style="color: #667eea; text-decoration: none;">
+                                <i class="fas fa-external-link-alt"></i> Find Ticker Symbol on Yahoo Finance
+                            </a>
                         </small>
                     </div>
                     <div class="form-group">
@@ -6297,7 +7048,10 @@ body.dark-mode .modal-body h4 {
                         <label for="portfolioTicker">Ticker/ISIN:</label>
                         <input type="text" id="portfolioTicker" name="portfolioTicker" required placeholder="RELIANCE.NS, AAPL, TCS.NS">
                         <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
-                            Examples: RELIANCE.NS, AAPL, TCS.NS, MSFT
+                            Examples: RELIANCE.NS, AAPL, TCS.NS, MSFT<br>
+                            <a href="https://finance.yahoo.com/" target="_blank" style="color: #667eea; text-decoration: none;">
+                                <i class="fas fa-external-link-alt"></i> Find Ticker Symbol on Yahoo Finance
+                            </a>
                         </small>
                     </div>
                     <div class="form-group">
@@ -7234,7 +7988,7 @@ const API_CONFIG = {
     directAPIs: {
         enabled: true,               // ✅ Enabled by default
         refreshInterval: 300000,     // Refresh every 5 minutes
-        useCorsProxy: true,          // Use CORS proxy for browser (always enabled)
+        useCorsProxy: true,          // Use CORS proxy for local files
         corsProxy: 'https://api.allorigins.win/raw?url=',  // Public CORS proxy
         
         // Primary sources (tried in order)
@@ -7422,16 +8176,6 @@ class LivePriceService {
     
     // ===== Fetch price from multiple API sources =====
     async fetchPriceFromAPIs(ticker) {
-        // Check if it's a cryptocurrency first
-        if (this.isCryptoTicker(ticker)) {
-            try {
-                const price = await this.fetchCryptoPrice(ticker);
-                if (price) return price;
-            } catch (error) {
-                console.warn(`Crypto API failed for ${ticker}`);
-            }
-        }
-        
         // Try Yahoo Finance first (works for most stocks)
         try {
             const price = await this.fetchFromYahoo(ticker);
@@ -7459,77 +8203,6 @@ class LivePriceService {
         return null;
     }
     
-    // ===== Check if ticker is cryptocurrency =====
-    isCryptoTicker(ticker) {
-        const cryptoTickers = ['BTC', 'ETH', 'USDT', 'BNB', 'XRP', 'ADA', 'DOGE', 'SOL', 'DOT', 'MATIC', 
-                               'LTC', 'SHIB', 'TRX', 'AVAX', 'UNI', 'LINK', 'BCH', 'XLM', 'ALGO', 'VET'];
-        return cryptoTickers.includes(ticker.toUpperCase());
-    }
-
-    // ===== Fetch Cryptocurrency Prices =====
-    async fetchCryptoPrice(ticker) {
-        try {
-            // Map crypto tickers to Yahoo Finance format (e.g., BTC → BTC-USD)
-            const cryptoMap = {
-                'BTC': 'BTC-USD',
-                'ETH': 'ETH-USD',
-                'USDT': 'USDT-USD',
-                'BNB': 'BNB-USD',
-                'XRP': 'XRP-USD',
-                'ADA': 'ADA-USD',
-                'DOGE': 'DOGE-USD',
-                'SOL': 'SOL-USD',
-                'DOT': 'DOT-USD',
-                'MATIC': 'MATIC-USD',
-                'LTC': 'LTC-USD',
-                'SHIB': 'SHIB-USD',
-                'TRX': 'TRX-USD',
-                'AVAX': 'AVAX-USD',
-                'UNI': 'UNI-USD',
-                'LINK': 'LINK-USD',
-                'BCH': 'BCH-USD',
-                'XLM': 'XLM-USD',
-                'ALGO': 'ALGO-USD',
-                'VET': 'VET-USD'
-            };
-            
-            const yahooTicker = cryptoMap[ticker.toUpperCase()] || `${ticker.toUpperCase()}-USD`;
-            
-            // Use Yahoo Finance API (same as stocks)
-            let url = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1d&range=1d`;
-            
-            // Always use CORS proxy when running in browser
-            if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
-                url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
-            }
-            
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Accept': 'application/json'
-                }
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            // Return price in USD (will be converted to INR if needed)
-            if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
-                const price = data.chart.result[0].meta.regularMarketPrice;
-                console.log(`✓ ${ticker} price: $${price}`);
-                return price;
-            }
-            
-            return null;
-        } catch (error) {
-            console.error(`Error fetching crypto price for ${ticker}:`, error.message);
-            return null;
-        }
-    }
-    
     // ===== Yahoo Finance API =====
     async fetchFromYahoo(ticker) {
         // Yahoo Finance expects tickers in specific formats
@@ -7537,12 +8210,7 @@ class LivePriceService {
                            ticker.endsWith('NS') || ticker.endsWith('BO') ? ticker :
                            `${ticker}.NS`; // Default to NSE for Indian stocks
         
-        let url = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1d&range=1d`;
-        
-        // Always use CORS proxy when running in browser
-        if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
-            url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
-        }
+        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1d&range=1d`;
         
         const response = await fetch(url);
         const data = await response.json();
@@ -7559,12 +8227,7 @@ class LivePriceService {
         const apiKey = API_CONFIG.directAPIs.sources.find(s => s.name === 'Alpha Vantage')?.apiKey || 'demo';
         const cleanTicker = ticker.replace(/\.(NS|BO)$/, '');
         
-        let url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${cleanTicker}&apikey=${apiKey}`;
-        
-        // Always use CORS proxy when running in browser
-        if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
-            url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
-        }
+        const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${cleanTicker}&apikey=${apiKey}`;
         
         const response = await fetch(url);
         const data = await response.json();
@@ -7581,12 +8244,7 @@ class LivePriceService {
         const apiKey = API_CONFIG.directAPIs.sources.find(s => s.name === 'Finnhub')?.apiKey || 'demo';
         const cleanTicker = ticker.replace(/\.(NS|BO)$/, '');
         
-        let url = `https://finnhub.io/api/v1/quote?symbol=${cleanTicker}&token=${apiKey}`;
-        
-        // Always use CORS proxy when running in browser
-        if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
-            url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
-        }
+        const url = `https://finnhub.io/api/v1/quote?symbol=${cleanTicker}&token=${apiKey}`;
         
         const response = await fetch(url);
         const data = await response.json();
@@ -7638,14 +8296,6 @@ class LivePriceService {
             }
         });
 
-        // Also add crypto tickers
-        const cryptoData = window.cryptoData || [];
-        cryptoData.forEach(item => {
-            if (item.ticker) {
-                symbols.add(item.ticker);
-            }
-        });
-
         return Array.from(symbols);
     }
 
@@ -7686,13 +8336,7 @@ class LivePriceService {
     // ===== Fetch from Finnhub =====
     async fetchFromFinnhub(symbol) {
         try {
-            let url = `${API_CONFIG.finnhub.baseUrl}/quote?symbol=${symbol}&token=${API_CONFIG.finnhub.key}`;
-            
-            // Always use CORS proxy when running in browser
-            if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
-                url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
-            }
-            
+            const url = `${API_CONFIG.finnhub.baseUrl}/quote?symbol=${symbol}&token=${API_CONFIG.finnhub.key}`;
             const response = await fetch(url);
             const data = await response.json();
             
@@ -7709,13 +8353,7 @@ class LivePriceService {
     // ===== Fetch from Alpha Vantage =====
     async fetchFromAlphaVantage(symbol) {
         try {
-            let url = `${API_CONFIG.alphaVantage.baseUrl}?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_CONFIG.alphaVantage.key}`;
-            
-            // Always use CORS proxy when running in browser
-            if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
-                url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
-            }
-            
+            const url = `${API_CONFIG.alphaVantage.baseUrl}?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${API_CONFIG.alphaVantage.key}`;
             const response = await fetch(url);
             const data = await response.json();
             
@@ -7732,13 +8370,7 @@ class LivePriceService {
     // ===== Fetch from Twelve Data =====
     async fetchFromTwelveData(symbol) {
         try {
-            let url = `${API_CONFIG.twelveData.baseUrl}/price?symbol=${symbol}&apikey=${API_CONFIG.twelveData.key}`;
-            
-            // Always use CORS proxy when running in browser
-            if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
-                url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
-            }
-            
+            const url = `${API_CONFIG.twelveData.baseUrl}/price?symbol=${symbol}&apikey=${API_CONFIG.twelveData.key}`;
             const response = await fetch(url);
             const data = await response.json();
             
@@ -7821,23 +8453,6 @@ class LivePriceService {
             window.setUserData('portfolioData', JSON.stringify(portfolioData));
         }
 
-        // Also update crypto data
-        const cryptoData = window.cryptoData || [];
-        cryptoData.forEach(item => {
-            const cachedPrice = this.priceCache.get(item.ticker);
-            
-            if (cachedPrice) {
-                item.currentPrice = cachedPrice;
-                updatedCount++;
-            }
-        });
-        
-        // Update window reference and save crypto data
-        window.cryptoData = cryptoData;
-        if (typeof window.setUserData === 'function') {
-            window.setUserData('cryptoData', JSON.stringify(cryptoData));
-        }
-
         console.log(`✅ Updated ${updatedCount} portfolio items`);
 
         // Re-render portfolio table
@@ -7846,9 +8461,6 @@ class LivePriceService {
         }
         if (typeof renderCommodityTable === 'function') {
             renderCommodityTable();
-        }
-        if (typeof renderCryptoTable === 'function') {
-            renderCryptoTable();
         }
         // Call updateSummary if it exists
         if (typeof updateSummary === 'function') {
@@ -13331,6 +13943,18 @@ window.openCapitalGainsCalculator = function openCapitalGainsCalculator() {
                 </select>
             </div>
             
+            <div style="margin-bottom: 20px;" id="cgEquityRegionDiv" style="display: none;">
+                <label style="display: block; margin-bottom: 10px; color: #333; font-weight: 600;">Equity Region:</label>
+                <select id="cgEquityRegion" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                    <option value="indian">Indian Equity (Listed Stocks/MF)</option>
+                    <option value="us">US Equity (Stocks/MF/ETFs)</option>
+                </select>
+                <small style="color: #666; font-size: 12px; display: block; margin-top: 5px;">
+                    <strong>Indian Equity:</strong> STCG (≤12mo) 20%, LTCG (>12mo) 12.5% with ₹1.25L exemption<br>
+                    <strong>US Equity:</strong> Different tax rules apply as per Indian tax laws for foreign investments
+                </small>
+            </div>
+            
             <div style="margin-bottom: 20px;" id="cgSlabRateDiv">
                 <label style="display: block; margin-bottom: 10px; color: #333; font-weight: 600;">Your Income Tax Slab Rate (%):</label>
                 <select id="cgSlabRate" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
@@ -13393,6 +14017,16 @@ window.openCapitalGainsCalculator = function openCapitalGainsCalculator() {
 window.updateCapitalGainsForm = function updateCapitalGainsForm() {
     const assetType = document.getElementById('cgAssetType').value;
     const indexationDiv = document.getElementById('cgIndexationDiv');
+    const equityRegionDiv = document.getElementById('cgEquityRegionDiv');
+    
+    // Show equity region selector only for equity
+    if (equityRegionDiv) {
+        if (assetType === 'equity') {
+            equityRegionDiv.style.display = 'block';
+        } else {
+            equityRegionDiv.style.display = 'none';
+        }
+    }
     
     // Show indexation option for debt and real estate (old regime)
     if (assetType === 'debt' || assetType === 'realestate') {
@@ -13415,9 +14049,12 @@ window.calculateFromPortfolio = function calculateFromPortfolio() {
     let totalCurrent = 0;
     let holdings = [];
     
+    // Get equity region (Indian or US)
+    const equityRegion = document.getElementById('cgEquityRegion') ? document.getElementById('cgEquityRegion').value : 'indian';
+    
     // Define LTCG periods
     const ltcgPeriods = {
-        'equity': 12,
+        'equity': equityRegion === 'us' ? 24 : 12,  // US equity: 24 months, Indian equity: 12 months
         'debt': 24,
         'fd': 24,
         'realestate': 24,
@@ -13434,13 +14071,24 @@ window.calculateFromPortfolio = function calculateFromPortfolio() {
     const today = new Date();
     
     if (assetType === 'equity') {
-        // Filter stocks (indian-stock, us-stock) and equity mutual funds
+        // Filter stocks (indian-stock, us-stock) and equity mutual funds based on selected region
         const equityHoldings = portfolioData.filter(item => {
-            if (item.type === 'indian-stock' || item.type === 'us-stock') {
-                return true;
-            }
-            if ((item.type === 'indian-mf' || item.type === 'us-mf') && item.mfType === 'equity') {
-                return true;
+            if (equityRegion === 'us') {
+                // US equity: us-stock and us-mf (equity type)
+                if (item.type === 'us-stock') {
+                    return true;
+                }
+                if (item.type === 'us-mf' && item.mfType === 'equity') {
+                    return true;
+                }
+            } else {
+                // Indian equity: indian-stock and indian-mf (equity type)
+                if (item.type === 'indian-stock') {
+                    return true;
+                }
+                if (item.type === 'indian-mf' && item.mfType === 'equity') {
+                    return true;
+                }
             }
             return false;
         });
@@ -13698,9 +14346,12 @@ function calculateSingleCapitalGains(assetType, purchasePrice, currentValue, hol
     // Get user's income tax slab rate
     const slabRate = parseFloat(document.getElementById('cgSlabRate').value) || 30;
     
+    // Get equity region (Indian or US)
+    const equityRegion = document.getElementById('cgEquityRegion') ? document.getElementById('cgEquityRegion').value : 'indian';
+    
     // Define LTCG periods for different asset types (Budget 2024)
     const ltcgPeriods = {
-        'equity': 12,
+        'equity': equityRegion === 'us' ? 24 : 12,  // US equity: 24 months, Indian equity: 12 months
         'debt': 24,
         'fd': 24,
         'realestate': 24,
@@ -13717,27 +14368,44 @@ function calculateSingleCapitalGains(assetType, purchasePrice, currentValue, hol
     let effectiveTaxRate = 0;
     let indexationBenefit = 0;
     let exemptionApplied = 0;
+    let isUSEquity = false;
     
     // Calculate tax based on asset type and holding period (Budget 2024 rules)
     if (assetType === 'equity') {
-        if (isLongTerm) {
-            // LTCG on equity: 12.5% with ₹1.25 lakh exemption (Budget 2024)
-            taxRate = 12.5;
-            const exemptionLimit = 125000;
+        if (equityRegion === 'us') {
+            // US Equity taxation as per Indian tax laws
+            isUSEquity = true;
             
-            if (capitalGain <= exemptionLimit) {
-                // Fully exempt
-                taxableGain = 0;
-                exemptionApplied = capitalGain;
+            if (isLongTerm) {
+                // US Stocks: LTCG (> 24 months) → 12.5% (no indexation, no exemption)
+                taxRate = 12.5;
+                taxableGain = capitalGain;
             } else {
-                // Partially exempt
-                taxableGain = capitalGain - exemptionLimit;
-                exemptionApplied = exemptionLimit;
+                // US Stocks & US MF/ETFs: STCG (≤ 24 months) → taxed at slab rate
+                taxRate = slabRate;
+                taxableGain = capitalGain;
             }
         } else {
-            // STCG on equity: 20% (Budget 2024)
-            taxRate = 20;
-            taxableGain = capitalGain;
+            // Indian Equity taxation
+            if (isLongTerm) {
+                // LTCG on Indian equity: 12.5% with ₹1.25 lakh exemption (Budget 2024)
+                taxRate = 12.5;
+                const exemptionLimit = 125000;
+                
+                if (capitalGain <= exemptionLimit) {
+                    // Fully exempt
+                    taxableGain = 0;
+                    exemptionApplied = capitalGain;
+                } else {
+                    // Partially exempt
+                    taxableGain = capitalGain - exemptionLimit;
+                    exemptionApplied = exemptionLimit;
+                }
+            } else {
+                // STCG on Indian equity: 20% (Budget 2024)
+                taxRate = 20;
+                taxableGain = capitalGain;
+            }
         }
     } else if (assetType === 'debt' || assetType === 'fd') {
         // Debt MF/Bonds/FDs: Taxed as per slab rate (Budget 2023 onwards)
@@ -13919,8 +14587,16 @@ function calculateSingleCapitalGains(assetType, purchasePrice, currentValue, hol
             <div style="background: #fff3e0; padding: 15px; border-radius: 8px; border-left: 4px solid #ff9800;">
                 <h4 style="color: #ef6c00; margin: 0 0 10px 0;">💡 Important Notes (Budget 2024):</h4>
                 <ul style="margin: 0; padding-left: 20px; color: #333; line-height: 1.8; font-size: 13px;">
-                    <li><strong>Equity (Listed Shares/MF):</strong> STCG 20%, LTCG 12.5% with ₹1.25L annual exemption</li>
-                    <li><strong>Holding Period:</strong> Equity ≤12mo = STCG, >12mo = LTCG; Others ≤24mo = STCG, >24mo = LTCG</li>
+                    ${isUSEquity ? `
+                        <li><strong>US Equity (as per Indian Tax Laws):</strong></li>
+                        <li style="margin-left: 20px;">• <strong>US Stocks (Direct):</strong> STCG (≤24mo) taxed at slab rate (${slabRate}%), LTCG (>24mo) 12.5% (NO indexation, NO exemption)</li>
+                        <li style="margin-left: 20px;">• <strong>US Mutual Funds/ETFs:</strong> Taxed at slab rate (${slabRate}%) regardless of holding period</li>
+                        <li style="margin-left: 20px;">• <strong>Holding Period:</strong> ≤24 months = STCG, >24 months = LTCG</li>
+                        <li style="margin-left: 20px;">• No ₹1.25L exemption for US equity</li>
+                    ` : `
+                        <li><strong>Indian Equity (Listed Shares/MF):</strong> STCG 20%, LTCG 12.5% with ₹1.25L annual exemption</li>
+                        <li><strong>Holding Period:</strong> Equity ≤12mo = STCG, >12mo = LTCG; Others ≤24mo = STCG, >24mo = LTCG</li>
+                    `}
                     <li><strong>Real Estate LTCG:</strong> 12.5% flat (new rule); OR 20% with indexation if bought before 23-Jul-2024</li>
                     <li><strong>Indexation:</strong> Mostly removed; available only for old property purchases (pre 23-Jul-2024)</li>
                     <li><strong>Debt MF/Bonds:</strong> Both STCG & LTCG taxed as per your income tax slab</li>
@@ -13948,6 +14624,10 @@ function calculateSeparatedCapitalGains(assetType, applyIndexation) {
     // Get user's income tax slab rate
     const slabRate = parseFloat(document.getElementById('cgSlabRate').value) || 30;
     
+    // Get equity region (Indian or US)
+    const equityRegion = document.getElementById('cgEquityRegion') ? document.getElementById('cgEquityRegion').value : 'indian';
+    const isUSEquity = assetType === 'equity' && equityRegion === 'us';
+    
     const formatCurrency = (amount) => {
         if (typeof fmtINR === 'function') {
             return fmtINR(amount);
@@ -13956,7 +14636,7 @@ function calculateSeparatedCapitalGains(assetType, applyIndexation) {
     };
     
     const assetNames = {
-        'equity': 'Equity (Stocks/Equity MF)',
+        'equity': isUSEquity ? 'US Equity (Stocks/MF/ETFs)' : 'Indian Equity (Stocks/Equity MF)',
         'debt': 'Debt (Debt MF/Bonds)',
         'fd': 'Fixed Deposits (FD)',
         'realestate': 'Real Estate',
@@ -13970,6 +14650,14 @@ function calculateSeparatedCapitalGains(assetType, applyIndexation) {
         stGain = stCurrent - stPurchase;
         
         if (assetType === 'equity') {
+            if (isUSEquity) {
+                // US Equity STCG: taxed at slab rate
+                stTaxRate = slabRate;
+            } else {
+                // Indian Equity STCG: 20%
+                stTaxRate = 20;
+            }
+        } else if (assetType === 'crypto') {
             stTaxRate = 20;
         } else if (assetType === 'crypto') {
             stTaxRate = 30;
@@ -13988,14 +14676,21 @@ function calculateSeparatedCapitalGains(assetType, applyIndexation) {
         ltGain = ltCurrent - ltPurchase;
         
         if (assetType === 'equity') {
-            ltTaxRate = 12.5;
-            const exemptionLimit = 125000;
-            if (ltGain > exemptionLimit) {
-                ltExemption = exemptionLimit;
-                ltTaxAmount = ((ltGain - exemptionLimit) * ltTaxRate) / 100;
+            if (isUSEquity) {
+                // US Equity LTCG: 12.5% (no exemption, no indexation)
+                ltTaxRate = 12.5;
+                ltTaxAmount = (ltGain * ltTaxRate) / 100;
             } else {
-                ltExemption = ltGain;
-                ltTaxAmount = 0;
+                // Indian Equity LTCG: 12.5% with ₹1.25L exemption
+                ltTaxRate = 12.5;
+                const exemptionLimit = 125000;
+                if (ltGain > exemptionLimit) {
+                    ltExemption = exemptionLimit;
+                    ltTaxAmount = ((ltGain - exemptionLimit) * ltTaxRate) / 100;
+                } else {
+                    ltExemption = ltGain;
+                    ltTaxAmount = 0;
+                }
             }
         } else if (assetType === 'crypto') {
             ltTaxRate = 30;
@@ -15294,6 +15989,14 @@ function hideLoginPage() {
     if (typeof initializeApp === 'function') {
         initializeApp();
     }
+    
+    // Show first-time warning for new users after sign up
+    setTimeout(() => {
+        const hasSeenWarning = localStorage.getItem('hasSeenDataWarning');
+        if (!hasSeenWarning && typeof showFirstTimeWarning === 'function') {
+            showFirstTimeWarning();
+        }
+    }, 1000);
 }
 
 function handleLogin(event) {
@@ -15657,6 +16360,13 @@ function handleSignUp(event) {
         if (typeof initializeApp === 'function') {
             initializeApp();
         }
+        // Show first-time warning for new users
+        setTimeout(() => {
+            const hasSeenWarning = localStorage.getItem('hasSeenDataWarning');
+            if (!hasSeenWarning && typeof showFirstTimeWarning === 'function') {
+                showFirstTimeWarning();
+            }
+        }, 1000);
     }
 }
 
@@ -15906,7 +16616,51 @@ function showPage(pageName) {
             mainNav.style.display = 'flex'; // Show navigation on other pages
         }
     }
+    
+    // Mobile-specific navigation: Show only Home link when in a section
+    const isMobile = () => window.innerWidth <= 480;
+    if (isMobile()) {
+        const navLinks = document.querySelectorAll('#mainNavigation .nav-link[data-section]');
+        if (pageName === 'home') {
+            // Show all nav links on home page
+            navLinks.forEach(link => {
+                link.style.display = 'flex';
+            });
+        } else {
+            // Hide all section nav links, keep only Home visible
+            navLinks.forEach(link => {
+                link.style.display = 'none';
+            });
+        }
+    } else {
+        // Desktop: Show all nav links
+        const navLinks = document.querySelectorAll('#mainNavigation .nav-link[data-section]');
+        navLinks.forEach(link => {
+            link.style.display = 'flex';
+        });
+    }
 }
+
+// Handle window resize for mobile navigation
+window.addEventListener('resize', function() {
+    const isMobile = window.innerWidth <= 480;
+    const navLinks = document.querySelectorAll('#mainNavigation .nav-link[data-section]');
+    
+    if (!isMobile) {
+        // Desktop: Show all nav links
+        navLinks.forEach(link => {
+            link.style.display = 'flex';
+        });
+    } else {
+        // Mobile: Check current page and hide section links if not on home
+        const homePage = document.getElementById('page-home');
+        if (homePage && homePage.style.display !== 'block') {
+            navLinks.forEach(link => {
+                link.style.display = 'none';
+            });
+        }
+    }
+});
 
 // ===== Initialize on Page Load =====
 document.addEventListener('DOMContentLoaded', function() {
@@ -16987,41 +17741,57 @@ async function savePortfolio(event) {
     
     // Fetch current live price
     let currentPrice = item?.currentPrice || 0;
-    try {
-        const fetchedPrice = await fetchLivePriceForStock(ticker);
-        if (fetchedPrice && fetchedPrice > 0) {
-            currentPrice = fetchedPrice;
-            console.log(`✅ Fetched live price for ${ticker}: ${currentPrice}`);
-        } else {
-            // If fetch fails, allow manual entry
-            console.warn(`⚠️ Could not fetch live price for ${ticker}`);
-            if (!isEdit) {
-                const manualPrice = prompt(
-                    `⚠️ Unable to auto-fetch price for ${ticker}.\n\n` +
-                    `This could be due to:\n` +
-                    `• Invalid ticker format (use RELIANCE.NS for NSE, AAPL for US)\n` +
-                    `• Stock not available on Yahoo Finance/Finnhub\n` +
-                    `• Network/CORS restrictions\n\n` +
-                    `Enter current price manually (or click Cancel to skip):`
-                );
-                
-                if (manualPrice && !isNaN(parseFloat(manualPrice)) && parseFloat(manualPrice) > 0) {
-                    currentPrice = parseFloat(manualPrice);
-                    console.log(`✓ Using manual price: ${currentPrice}`);
-                } else {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalBtnText;
-                    return false;
-                }
+    let fetchedPrice = null;
+    
+    // Try fetching with retry logic (2 attempts)
+    for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+            if (attempt > 1) {
+                console.log(`🔄 Retrying price fetch (attempt ${attempt})...`);
+                submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Retrying (${attempt}/2)...`;
+            }
+            
+            fetchedPrice = await fetchLivePriceForStock(ticker);
+            
+            if (fetchedPrice && fetchedPrice > 0) {
+                currentPrice = fetchedPrice;
+                console.log(`✅ Fetched live price for ${ticker}: ${currentPrice}`);
+                break; // Success, exit retry loop
+            }
+            
+            // If first attempt failed, wait briefly before retry
+            if (attempt === 1) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+        } catch (error) {
+            console.error(`Error fetching price (attempt ${attempt}):`, error);
+            if (attempt === 1) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
             }
         }
-    } catch (error) {
-        console.error('Error fetching price:', error);
+    }
+    
+    // If both attempts failed, handle manual entry
+    if (!fetchedPrice || fetchedPrice <= 0) {
+        console.warn(`⚠️ Could not fetch live price for ${ticker} after 2 attempts`);
         if (!isEdit) {
-            alert('⚠️ Error fetching live price. Please check your internet connection and try again.');
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = originalBtnText;
-            return false;
+            const manualPrice = prompt(
+                `⚠️ Unable to auto-fetch price for ${ticker}.\n\n` +
+                `This could be due to:\n` +
+                `• Invalid ticker format (use RELIANCE.NS for NSE, AAPL for US)\n` +
+                `• Stock not available on Yahoo Finance/Finnhub\n` +
+                `• Network/CORS restrictions\n\n` +
+                `Enter current price manually (or click Cancel to skip):`
+            );
+            
+            if (manualPrice && !isNaN(parseFloat(manualPrice)) && parseFloat(manualPrice) > 0) {
+                currentPrice = parseFloat(manualPrice);
+                console.log(`✓ Using manual price: ${currentPrice}`);
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnText;
+                return false;
+            }
         }
     }
 
@@ -17464,11 +18234,6 @@ function closeModal() {
 // ===== Fetch Live Price for Single Stock =====
 async function fetchLivePriceForStock(ticker) {
     try {
-        // Check if it's a cryptocurrency (BTC, ETH, etc.)
-        if (isCryptoTicker(ticker)) {
-            return await fetchCryptoPrice(ticker);
-        }
-        
         // Check if it's a commodity (gold/silver)
         if (ticker.toLowerCase().includes('gold') || ticker.toLowerCase().includes('silver')) {
             return await fetchCommodityPrice(ticker);
@@ -17482,77 +18247,6 @@ async function fetchLivePriceForStock(ticker) {
     }
 }
 
-// ===== Check if ticker is cryptocurrency =====
-function isCryptoTicker(ticker) {
-    const cryptoTickers = ['BTC', 'ETH', 'USDT', 'BNB', 'XRP', 'ADA', 'DOGE', 'SOL', 'DOT', 'MATIC', 
-                           'LTC', 'SHIB', 'TRX', 'AVAX', 'UNI', 'LINK', 'BCH', 'XLM', 'ALGO', 'VET'];
-    return cryptoTickers.includes(ticker.toUpperCase());
-}
-
-// ===== Fetch Cryptocurrency Prices =====
-async function fetchCryptoPrice(ticker) {
-    try {
-        // Map crypto tickers to Yahoo Finance format (e.g., BTC → BTC-USD)
-        const cryptoMap = {
-            'BTC': 'BTC-USD',
-            'ETH': 'ETH-USD',
-            'USDT': 'USDT-USD',
-            'BNB': 'BNB-USD',
-            'XRP': 'XRP-USD',
-            'ADA': 'ADA-USD',
-            'DOGE': 'DOGE-USD',
-            'SOL': 'SOL-USD',
-            'DOT': 'DOT-USD',
-            'MATIC': 'MATIC-USD',
-            'LTC': 'LTC-USD',
-            'SHIB': 'SHIB-USD',
-            'TRX': 'TRX-USD',
-            'AVAX': 'AVAX-USD',
-            'UNI': 'UNI-USD',
-            'LINK': 'LINK-USD',
-            'BCH': 'BCH-USD',
-            'XLM': 'XLM-USD',
-            'ALGO': 'ALGO-USD',
-            'VET': 'VET-USD'
-        };
-        
-        const yahooTicker = cryptoMap[ticker.toUpperCase()] || `${ticker.toUpperCase()}-USD`;
-        
-        // Use Yahoo Finance API (same as stocks)
-        let url = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1d&range=1d`;
-        
-        // Always use CORS proxy when running in browser
-        if (API_CONFIG.directAPIs && API_CONFIG.directAPIs.useCorsProxy) {
-            url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
-        }
-        
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        // Return price in USD (will be converted to INR if needed)
-        if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
-            const price = data.chart.result[0].meta.regularMarketPrice;
-            console.log(`✓ ${ticker} price: $${price}`);
-            return price;
-        }
-        
-        return null;
-    } catch (error) {
-        console.error(`Error fetching crypto price for ${ticker}:`, error.message);
-        return null;
-    }
-}
-
 // ===== Fetch Commodity Prices (Gold/Silver) =====
 async function fetchCommodityPrice(commodity) {
     try {
@@ -17562,11 +18256,11 @@ async function fetchCommodityPrice(commodity) {
         try {
             let url = `https://metals-api.com/api/latest?access_key=demo&base=USD&symbols=${commodityType.toUpperCase()}`;
             
-            if (API_CONFIG.directAPIs.useCorsProxy) {
+            if (API_CONFIG.directAPIs.useCorsProxy && window.location.protocol === 'file:') {
                 url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
             }
             
-            const response = await fetch(url);
+            const response = await fetchWithTimeout(url, {}, 10000); // 10 second timeout
             const data = await response.json();
             
             if (data?.rates?.[commodityType.toUpperCase()]) {
@@ -17624,6 +18318,27 @@ async function fetchPriceFromDirectAPIs(ticker) {
     return null;
 }
 
+// ===== Fetch with Timeout Helper =====
+async function fetchWithTimeout(url, options = {}, timeout = 10000) {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), timeout);
+    
+    try {
+        const response = await fetch(url, {
+            ...options,
+            signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+        return response;
+    } catch (error) {
+        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+            throw new Error('Request timeout');
+        }
+        throw error;
+    }
+}
+
 // ===== Yahoo Finance API =====
 async function fetchFromYahoo(ticker) {
     try {
@@ -17632,17 +18347,17 @@ async function fetchFromYahoo(ticker) {
         
         let url = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1d&range=1d`;
         
-        // Always use CORS proxy when running in browser (file:// or https://)
-        if (API_CONFIG.directAPIs.useCorsProxy) {
+        // Use CORS proxy if running from local file
+        if (API_CONFIG.directAPIs.useCorsProxy && window.location.protocol === 'file:') {
             url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
         }
         
-        const response = await fetch(url, {
+        const response = await fetchWithTimeout(url, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json'
             }
-        });
+        }, 10000); // 10 second timeout
         
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
@@ -17667,17 +18382,17 @@ async function fetchFromFinnhub(ticker) {
         const cleanTicker = ticker.replace(/\.(NS|BO)$/, '');
         let url = `https://finnhub.io/api/v1/quote?symbol=${cleanTicker}&token=demo`;
         
-        // Always use CORS proxy when running in browser (file:// or https://)
-        if (API_CONFIG.directAPIs.useCorsProxy) {
+        // Use CORS proxy if running from local file
+        if (API_CONFIG.directAPIs.useCorsProxy && window.location.protocol === 'file:') {
             url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
         }
         
-        const response = await fetch(url, {
+        const response = await fetchWithTimeout(url, {
             method: 'GET',
             headers: {
                 'Accept': 'application/json'
             }
-        });
+        }, 10000); // 10 second timeout
         
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}`);
@@ -19014,6 +19729,39 @@ function closeHelpModal() {
             resetModalPosition('helpModal');
         }
     }
+}
+
+// Contact Modal Functions
+function openContactModal() {
+    const modal = document.getElementById('contactModal');
+    if (modal) modal.style.display = 'flex';
+}
+
+function closeContactModal() {
+    const modal = document.getElementById('contactModal');
+    if (modal) {
+        modal.style.display = 'none';
+        if (typeof resetModalPosition === 'function') {
+            resetModalPosition('contactModal');
+        }
+    }
+}
+
+// First Time User Warning Modal Functions
+function showFirstTimeWarning() {
+    const modal = document.getElementById('firstTimeWarningModal');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+function closeFirstTimeWarning() {
+    const modal = document.getElementById('firstTimeWarningModal');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+    // Mark that user has seen the warning
+    localStorage.setItem('hasSeenDataWarning', 'true');
 }
 
 // ===== Reset Password and Security Questions =====
