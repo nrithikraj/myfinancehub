@@ -7984,14 +7984,14 @@ if (typeof window !== 'undefined') {
 
 const API_CONFIG = {
     // ===== Direct API Integration (No Setup Required!) =====
-    // Uses free financial APIs with automatic fallback
+    // Uses free financial APIs with automatic fallback and CORS proxy for GitHub Pages
     directAPIs: {
         enabled: true,               // ✅ Enabled by default
         refreshInterval: 300000,     // Refresh every 5 minutes
-        useCorsProxy: true,          // Use CORS proxy for local files
-        corsProxy: 'https://api.allorigins.win/raw?url=',  // Public CORS proxy
+        useCorsProxy: true,          // Use CORS proxy for GitHub Pages/remote hosting
+        corsProxy: 'https://api.allorigins.win/raw?url=',  // Public CORS proxy (auto-fallback)
         
-        // Primary sources (tried in order)
+        // Primary sources (tried in order with CORS proxy support)
         sources: [
             {
                 name: 'Yahoo Finance',
@@ -8203,20 +8203,58 @@ class LivePriceService {
         return null;
     }
     
-    // ===== Yahoo Finance API =====
+    // ===== Yahoo Finance API (with CORS proxy support for GitHub Pages) =====
     async fetchFromYahoo(ticker) {
         // Yahoo Finance expects tickers in specific formats
         const yahooTicker = ticker.includes('.') ? ticker : 
                            ticker.endsWith('NS') || ticker.endsWith('BO') ? ticker :
                            `${ticker}.NS`; // Default to NSE for Indian stocks
         
-        const url = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1d&range=1d`;
+        const baseUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1d&range=1d`;
         
-        const response = await fetch(url);
-        const data = await response.json();
+        // CORS proxies to try (in order) - essential for GitHub Pages deployment
+        const corsProxies = [
+            'https://api.allorigins.win/raw?url=',
+            'https://corsproxy.io/?',
+            '' // Direct request as fallback (works on localhost)
+        ];
         
-        if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
-            return data.chart.result[0].meta.regularMarketPrice;
+        // Try each CORS proxy
+        for (let i = 0; i < corsProxies.length; i++) {
+            const proxy = corsProxies[i];
+            try {
+                const url = proxy ? `${proxy}${encodeURIComponent(baseUrl)}` : baseUrl;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    if (i === corsProxies.length - 1) {
+                        console.warn(`Yahoo Finance: All proxies failed for ${ticker}`);
+                    }
+                    continue;
+                }
+                
+                const data = await response.json();
+                
+                if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
+                    const price = data.chart.result[0].meta.regularMarketPrice;
+                    if (proxy && i === 0) {
+                        // Successfully using CORS proxy
+                        console.log(`✓ Price fetched for ${ticker}: ₹${price.toFixed(2)} (via CORS proxy)`);
+                    }
+                    return price;
+                }
+            } catch (error) {
+                // Try next proxy
+                if (i === corsProxies.length - 1) {
+                    console.warn(`Yahoo Finance error for ${ticker}:`, error.message);
+                }
+                continue;
+            }
         }
         
         return null;
@@ -15797,20 +15835,49 @@ let usdToInrRate = 83.5; // Default rate
 // Export currentFilter to window for external scripts
 window.currentFilter = currentFilter;
 
-// Fetch USD to INR exchange rate using INR=X ticker
+// Fetch USD to INR exchange rate using INR=X ticker (with CORS proxy for GitHub Pages)
 async function fetchUsdToInrRate() {
     try {
-        // Try Yahoo Finance for INR=X ticker
-        const url = 'https://query1.finance.yahoo.com/v8/finance/chart/INR=X?interval=1d&range=1d';
-        const response = await fetch(url);
-        const data = await response.json();
+        const baseUrl = 'https://query1.finance.yahoo.com/v8/finance/chart/INR=X?interval=1d&range=1d';
         
-        if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
-            usdToInrRate = data.chart.result[0].meta.regularMarketPrice;
-            return usdToInrRate;
+        // CORS proxies to try (in order) - essential for GitHub Pages deployment
+        const corsProxies = [
+            'https://api.allorigins.win/raw?url=',
+            'https://corsproxy.io/?',
+            '' // Direct request as fallback (works on localhost)
+        ];
+        
+        // Try each CORS proxy
+        for (let i = 0; i < corsProxies.length; i++) {
+            const proxy = corsProxies[i];
+            try {
+                const url = proxy ? `${proxy}${encodeURIComponent(baseUrl)}` : baseUrl;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) continue;
+                
+                const data = await response.json();
+                
+                if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
+                    usdToInrRate = data.chart.result[0].meta.regularMarketPrice;
+                    console.log(`💱 USD to INR rate updated: ₹${usdToInrRate.toFixed(2)}`);
+                    return usdToInrRate;
+                }
+            } catch (error) {
+                // Try next proxy
+                if (i === corsProxies.length - 1) {
+                    console.warn('USD to INR rate fetch failed, using default rate:', usdToInrRate);
+                }
+                continue;
+            }
         }
     } catch (error) {
-        // Use default rate
+        console.warn('USD to INR rate fetch error, using default rate:', usdToInrRate);
     }
     return usdToInrRate;
 }
