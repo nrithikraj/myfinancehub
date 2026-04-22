@@ -7989,7 +7989,7 @@ const API_CONFIG = {
         enabled: true,               // ✅ Enabled by default
         refreshInterval: 300000,     // Refresh every 5 minutes
         useCorsProxy: true,          // Use CORS proxy for GitHub Pages/remote hosting
-        corsProxy: 'https://api.allorigins.win/raw?url=',  // Public CORS proxy (auto-fallback)
+        corsProxy: 'https://corsproxy.io/?',  // Primary reliable CORS proxy
         
         // Primary sources (tried in order with CORS proxy support)
         sources: [
@@ -8214,8 +8214,10 @@ class LivePriceService {
         
         // CORS proxies to try (in order) - essential for GitHub Pages deployment
         const corsProxies = [
-            'https://api.allorigins.win/raw?url=',
-            'https://corsproxy.io/?',
+            'https://corsproxy.io/?',                           // Reliable and fast
+            'https://api.codetabs.com/v1/proxy?quest=',       // Stable alternative
+            'https://proxy.cors.sh/',                          // Another reliable option
+            'https://api.allorigins.win/raw?url=',            // Backup (sometimes unreliable)
             '' // Direct request as fallback (works on localhost)
         ];
         
@@ -8228,10 +8230,12 @@ class LivePriceService {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json'
-                    }
+                    },
+                    timeout: 8000  // 8 second timeout per proxy
                 });
                 
                 if (!response.ok) {
+                    console.log(`Proxy ${i + 1}/${corsProxies.length} failed for ${ticker}, trying next...`);
                     if (i === corsProxies.length - 1) {
                         console.warn(`Yahoo Finance: All proxies failed for ${ticker}`);
                     }
@@ -8242,16 +8246,19 @@ class LivePriceService {
                 
                 if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
                     const price = data.chart.result[0].meta.regularMarketPrice;
-                    if (proxy && i === 0) {
+                    if (proxy) {
                         // Successfully using CORS proxy
-                        console.log(`✓ Price fetched for ${ticker}: ₹${price.toFixed(2)} (via CORS proxy)`);
+                        console.log(`✅ ${ticker}: ₹${price.toFixed(2)} (via proxy ${i + 1})`);
+                    } else {
+                        console.log(`✅ ${ticker}: ₹${price.toFixed(2)} (direct)`);
                     }
                     return price;
                 }
             } catch (error) {
                 // Try next proxy
+                console.log(`Proxy ${i + 1} error for ${ticker}: ${error.message}`);
                 if (i === corsProxies.length - 1) {
-                    console.warn(`Yahoo Finance error for ${ticker}:`, error.message);
+                    console.warn(`❌ Yahoo Finance: All ${corsProxies.length} proxies failed for ${ticker}`);
                 }
                 continue;
             }
