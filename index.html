@@ -18321,23 +18321,51 @@ async function fetchCommodityPrice(commodity) {
         
         // Try Metals-API (free tier available)
         try {
-            let url = `https://metals-api.com/api/latest?access_key=demo&base=USD&symbols=${commodityType.toUpperCase()}`;
+            const baseUrl = `https://metals-api.com/api/latest?access_key=demo&base=USD&symbols=${commodityType.toUpperCase()}`;
             
-            if (API_CONFIG.directAPIs.useCorsProxy && window.location.protocol === 'file:') {
-                url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
-            }
+            // CORS proxies to try (in order) - GitHub Pages needs CORS proxy
+            const corsProxies = [
+                'https://api.allorigins.win/raw?url=',
+                'https://corsproxy.io/?',
+                '' // Direct request as last resort
+            ];
             
-            const response = await fetchWithTimeout(url, {}, 10000); // 10 second timeout
-            const data = await response.json();
-            
-            if (data?.rates?.[commodityType.toUpperCase()]) {
-                // Convert to INR (metals-api returns price per troy ounce in USD)
-                const usdPrice = 1 / data.rates[commodityType.toUpperCase()];
-                const inrPrice = usdPrice * 83.5; // USD to INR conversion
-                const gramsPrice = inrPrice / 31.1035; // Troy ounce to grams
-                
-                console.log(`✓ ${commodityType} price: ₹${gramsPrice.toFixed(2)}/gram`);
-                return gramsPrice;
+            // Try each CORS proxy in order
+            for (let i = 0; i < corsProxies.length; i++) {
+                const proxy = corsProxies[i];
+                try {
+                    const url = proxy ? `${proxy}${encodeURIComponent(baseUrl)}` : baseUrl;
+                    
+                    const response = await fetchWithTimeout(url, {}, 10000); // 10 second timeout
+                    
+                    if (!response.ok) {
+                        if (i < corsProxies.length - 1) continue;
+                        throw new Error(`HTTP ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    
+                    if (data?.rates?.[commodityType.toUpperCase()]) {
+                        // Convert to INR (metals-api returns price per troy ounce in USD)
+                        const usdPrice = 1 / data.rates[commodityType.toUpperCase()];
+                        const inrPrice = usdPrice * 83.5; // USD to INR conversion
+                        const gramsPrice = inrPrice / 31.1035; // Troy ounce to grams
+                        
+                        console.log(`✓ ${commodityType} price: ₹${gramsPrice.toFixed(2)}/gram`);
+                        return gramsPrice;
+                    }
+                    
+                    // No valid data, try next proxy
+                    if (i < corsProxies.length - 1) continue;
+                    
+                } catch (error) {
+                    // If this is the last proxy, fall through to fallback prices
+                    if (i === corsProxies.length - 1) {
+                        console.warn('Metals-API failed:', error.message);
+                    }
+                    // Otherwise, try next proxy
+                    continue;
+                }
             }
         } catch (error) {
             console.warn('Metals-API failed:', error.message);
@@ -18360,7 +18388,7 @@ async function fetchCommodityPrice(commodity) {
 
 // ===== Fetch Price from Direct APIs (Yahoo, Finnhub) =====
 async function fetchPriceFromDirectAPIs(ticker) {
-    console.log(`🔍 Fetching price for ${ticker}...`);
+    console.log(`🔍 Fetching price for ${ticker}... (Protocol: ${window.location.protocol}, Host: ${window.location.host})`);
     
     // Try Yahoo Finance first (best for Indian and US stocks)
     try {
@@ -18369,7 +18397,7 @@ async function fetchPriceFromDirectAPIs(ticker) {
             return price;
         }
     } catch (error) {
-        // Silent fail, try fallback
+        console.warn(`Yahoo Finance failed for ${ticker}:`, error.message);
     }
     
     // Try Finnhub as backup
@@ -18379,7 +18407,7 @@ async function fetchPriceFromDirectAPIs(ticker) {
             return price;
         }
     } catch (error) {
-        // Silent fail
+        console.warn(`Finnhub failed for ${ticker}:`, error.message);
     }
     
     return null;
@@ -18406,34 +18434,70 @@ async function fetchWithTimeout(url, options = {}, timeout = 10000) {
     }
 }
 
-// ===== Yahoo Finance API =====
+// ===== Yahoo Finance API (with CORS proxy for GitHub Pages & all remote hosts) =====
 async function fetchFromYahoo(ticker) {
     try {
         // Yahoo expects specific formats
         const yahooTicker = ticker; // Already in correct format (RELIANCE.NS, AAPL)
         
-        let url = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1d&range=1d`;
+        const baseUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${yahooTicker}?interval=1d&range=1d`;
         
-        // Use CORS proxy if running from local file
-        if (API_CONFIG.directAPIs.useCorsProxy && window.location.protocol === 'file:') {
-            url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
-        }
+        // CORS proxies to try (in order) - GitHub Pages needs CORS proxy
+        const corsProxies = [
+            { name: 'AllOrigins', url: 'https://api.allorigins.win/raw?url=' },
+            { name: 'CorsProxy.io', url: 'https://corsproxy.io/?' },
+            { name: 'Direct', url: '' } // Direct request as last resort (works only on localhost)
+        ];
         
-        const response = await fetchWithTimeout(url, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
+        // Try each CORS proxy in order
+        for (let i = 0; i < corsProxies.length; i++) {
+            const proxyConfig = corsProxies[i];
+            try {
+                const url = proxyConfig.url ? `${proxyConfig.url}${encodeURIComponent(baseUrl)}` : baseUrl;
+                
+                if (i > 0) {
+                    console.log(`  → Trying ${proxyConfig.name} proxy for ${ticker}...`);
+                }
+                
+                const response = await fetchWithTimeout(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                }, 10000); // 10 second timeout
+                
+                if (!response.ok) {
+                    // Try next proxy
+                    if (i < corsProxies.length - 1) {
+                        console.log(`  ✗ ${proxyConfig.name} returned ${response.status}, trying next proxy...`);
+                        continue;
+                    }
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
+                    const price = data.chart.result[0].meta.regularMarketPrice;
+                    console.log(`✓ Yahoo price for ${ticker}: ₹${price.toFixed(2)} (via ${proxyConfig.name})`);
+                    return price;
+                }
+                
+                // No valid data, try next proxy
+                if (i < corsProxies.length - 1) {
+                    console.log(`  ✗ ${proxyConfig.name} returned no data, trying next proxy...`);
+                    continue;
+                }
+                
+            } catch (error) {
+                // If this is the last proxy, throw the error
+                if (i === corsProxies.length - 1) {
+                    throw error;
+                }
+                // Otherwise, try next proxy
+                console.log(`  ✗ ${proxyConfig.name} failed: ${error.message}, trying next proxy...`);
+                continue;
             }
-        }, 10000); // 10 second timeout
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data?.chart?.result?.[0]?.meta?.regularMarketPrice) {
-            return data.chart.result[0].meta.regularMarketPrice;
         }
         
         return null;
@@ -18443,32 +18507,56 @@ async function fetchFromYahoo(ticker) {
     }
 }
 
-// ===== Finnhub API =====
+// ===== Finnhub API (with CORS proxy for GitHub Pages) =====
 async function fetchFromFinnhub(ticker) {
     try {
         const cleanTicker = ticker.replace(/\.(NS|BO)$/, '');
-        let url = `https://finnhub.io/api/v1/quote?symbol=${cleanTicker}&token=demo`;
+        const baseUrl = `https://finnhub.io/api/v1/quote?symbol=${cleanTicker}&token=demo`;
         
-        // Use CORS proxy if running from local file
-        if (API_CONFIG.directAPIs.useCorsProxy && window.location.protocol === 'file:') {
-            url = API_CONFIG.directAPIs.corsProxy + encodeURIComponent(url);
-        }
+        // CORS proxies to try (in order) - GitHub Pages needs CORS proxy
+        const corsProxies = [
+            'https://api.allorigins.win/raw?url=',
+            'https://corsproxy.io/?',
+            '' // Direct request as last resort
+        ];
         
-        const response = await fetchWithTimeout(url, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
+        // Try each CORS proxy in order
+        for (let i = 0; i < corsProxies.length; i++) {
+            const proxy = corsProxies[i];
+            try {
+                const url = proxy ? `${proxy}${encodeURIComponent(baseUrl)}` : baseUrl;
+                
+                const response = await fetchWithTimeout(url, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                }, 10000); // 10 second timeout
+                
+                if (!response.ok) {
+                    // Try next proxy
+                    if (i < corsProxies.length - 1) continue;
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data?.c && data.c > 0) {
+                    console.log(`✓ Finnhub price for ${ticker}: $${data.c.toFixed(2)}${proxy ? ' (via proxy)' : ''}`);
+                    return data.c;
+                }
+                
+                // No valid data, try next proxy
+                if (i < corsProxies.length - 1) continue;
+                
+            } catch (error) {
+                // If this is the last proxy, throw the error
+                if (i === corsProxies.length - 1) {
+                    throw error;
+                }
+                // Otherwise, try next proxy
+                continue;
             }
-        }, 10000); // 10 second timeout
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data?.c && data.c > 0) {
-            return data.c;
         }
         
         return null;
